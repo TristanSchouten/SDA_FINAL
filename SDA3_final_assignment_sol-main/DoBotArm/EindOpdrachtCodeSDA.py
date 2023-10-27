@@ -151,28 +151,36 @@ def main():
                 #cv2.putText(image_copy, (cX,cY) (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
                 cv2.circle(image_copy, (cX, cY), 5, (255, 255, 255), -1)
 
+
+                if num_vertices == 0:
+                    Move = False
+
+                else:
+                    Move = True
+
+
             cv2.imshow('Centroids and Shapes', image_copy)
             cv2.waitKey(1)
 
+        if Move == True:
+            ctrlBot.moveArmXYZ (125, -160, 100)
+            ctrlBot.moveArmXYZ (X, Y, -43)
+            ctrlBot.toggleSuction(True)
+            ctrlBot.moveArmXYZ (125, -160, 100)
 
-        ctrlBot.moveArmXYZ (125, -160, 100)
-        ctrlBot.moveArmXYZ (X, Y, -43)
-        ctrlBot.toggleSuction(True)
-        ctrlBot.moveArmXYZ (125, -160, 100)
+            #droppen
+            ctrlBot.moveArmXYZ (135, 0, 50)
+            ctrlBot.moveArmXYZ (135, 0, 8)
+            ctrlBot.toggleSuction(False)
+            ctrlBot.moveArmXYZ (135, 0, 50)
 
-        #droppen
-        ctrlBot.moveArmXYZ (135, 0, 50)
-        ctrlBot.moveArmXYZ (135, 0, 8)
-        ctrlBot.toggleSuction(False)
-        ctrlBot.moveArmXYZ (135, 0, 50)
-
-        ctrlBot.SetConveyor(True)
-        time.sleep(1)
+            ctrlBot.SetConveyor(True)
+            time.sleep(1)
         #while (time.time() - start_time) <= 5:# wait 5 seconds and break
 	    #	ctrlBot.SetConveyor(True)
             #wachten
 
-        ctrlBot.SetConveyor(False)
+            ctrlBot.SetConveyor(False)
 
         #weer opnieuw beginnen
 
