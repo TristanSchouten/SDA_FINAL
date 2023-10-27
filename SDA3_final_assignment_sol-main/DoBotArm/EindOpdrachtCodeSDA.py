@@ -29,16 +29,6 @@ def port_selection():
     choice = int(input('Choose port by typing a number followed by [Enter]: '))
     return available_ports[choice].device
 
-#def homing_prompt():
-#    while (True):
-#        response = input("Do you wanna home? (y/n)")
-#        if(response == "y") :
-#            return True
-#        elif (response == "n"):
-#            return False
-#        else:
-#            print("Unrecognised response")
-
 #--Main Program--
 def main():
     #List selected ports for selection
@@ -150,6 +140,8 @@ def main():
 
             cv2.imshow('Centroids and Shapes', image_copy)
             cv2.waitKey(1)
+
+        
 
         if Move == True:
             # op pakken
