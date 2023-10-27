@@ -29,15 +29,15 @@ def port_selection():
     choice = int(input('Choose port by typing a number followed by [Enter]: '))
     return available_ports[choice].device
 
-def homing_prompt():
-    while (True):
-        response = input("Do you wanna home? (y/n)")
-        if(response == "y") :
-            return True
-        elif (response == "n"):
-            return False
-        else:
-            print("Unrecognised response")
+#def homing_prompt():
+#    while (True):
+#        response = input("Do you wanna home? (y/n)")
+#        if(response == "y") :
+#            return True
+#        elif (response == "n"):
+#            return False
+#        else:
+#            print("Unrecognised response")
 
 #--Main Program--
 def main():
@@ -45,13 +45,10 @@ def main():
     port = port_selection()
         
     # Preprogrammed sequence
-
     homeX, homeY, homeZ = 135, 0, 50
     print("Connecting")
     print("Homing")
     ctrlBot = Dbt.DoBotArm(port, homeX, homeY, homeZ, home = True) #Create DoBot Class Object with home position x,y,z
-    #ctrlBot.moveHome() # beweeg naar home maar eerste keer slaat die over.
-    # hier onder wat code in zetten
     
     # Create a video capture object
     vid_capture = cv2.VideoCapture(1, cv2.CAP_DSHOW)
@@ -65,36 +62,28 @@ def main():
     frame_size = (frame_width, frame_height)
     fps = 20
 
-
+    # Eerst een keer een frame lezen en laten zien
     ret, frame = vid_capture.read()
     cv2.imshow('Centroids and Shapes', frame)
 
 
     while True:
 
-        start_time = time.time()
+        # Twee keer hetzelfde omdat de dobot het eerste coordinaat overslaat
         ctrlBot.moveArmXYZ (135, 0, 100)
         ctrlBot.moveArmXYZ (135, 0, 100)
-        #ctrlBot.moveArmXYZ (125, -210, 100)
-        #ctrlBot.moveArmXYZ (125, -160, 100)
-        #ctrlBot.moveArmXYZ (0, -240, 0)
+        
 
-        #oppakken
-        #ctrlBot.moveArmXYZ (125, -160, 100)
         #funcite coordinatien krijgen
-
         ret, frame = vid_capture.read()
         #cv2.waitKey(1)
         
-
 
         if ret:
             ret, frame = vid_capture.read()
             original = frame.copy()
 
-
-
-            print(original.shape) # Print image dimensions
+            #print(original.shape) # Print image dimensions
             original = original[150:370, 130:350] # frame croppen
 
             # Convert the BGR image to other color spaces
@@ -129,6 +118,7 @@ def main():
                     cX, cY = 0, 0
 
                 # Label and draw the shape
+                
                 if num_vertices == 3:
                     shape_label = "Triangle"
                 elif num_vertices == 4:
@@ -139,30 +129,30 @@ def main():
                     shape_label = "Hexagon"
                 else:
                     shape_label = "Circle"
+                
+                # Wanneer die niks ziet move voor oppakken uit zeten
+                if num_vertices == 0:
+                    Move = False
+                else:
+                    Move = True
 
                 # Adjust the position of the text
                 text_x = cX - 30
                 text_y = cY - 30
 
+                # Berekeningen voor de locatie van het object dat die gaat oppakken
                 X = 245 - (cX*0.72)
                 Y = -(258 - (cY*0.72)) 
 
                 cv2.drawContours(image=image_copy, contours=[contour], contourIdx=-1, color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
-                #cv2.putText(image_copy, (cX,cY) (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+                cv2.putText(image_copy, (cX,cY) (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
                 cv2.circle(image_copy, (cX, cY), 5, (255, 255, 255), -1)
-
-
-                if num_vertices == 0:
-                    Move = False
-
-                else:
-                    Move = True
-
 
             cv2.imshow('Centroids and Shapes', image_copy)
             cv2.waitKey(1)
 
         if Move == True:
+            # op pakken
             ctrlBot.moveArmXYZ (125, -160, 100)
             ctrlBot.moveArmXYZ (X, Y, -43)
             ctrlBot.toggleSuction(True)
@@ -176,28 +166,11 @@ def main():
 
             ctrlBot.SetConveyor(True)
             time.sleep(1)
-        #while (time.time() - start_time) <= 5:# wait 5 seconds and break
-	    #	ctrlBot.SetConveyor(True)
             #wachten
 
             ctrlBot.SetConveyor(False)
 
         #weer opnieuw beginnen
-
-
-
-
-    #ctrlBot.moveArmXYZ (0, 210, 50)
-    #ctrlBot.moveArmXYZ (150, 210, 50)
-    #ctrlBot.moveArmXYZ (150, 210, -43)
-    #ctrlBot.toggleSuction(True)
-    #ctrlBot.moveArmXYZ (150, 210, 50)
-    #ctrlBot.moveArmXYZ (0, 210, 50)
-    #ctrlBot.moveArmXYZ (0, 210, 8)
-    #ctrlBot.toggleSuction(False)
-
-    #ctrlBot.moveArmXYZ (150, 150, 50)
-    #ctrlBot.moveHome()
 
     print("Disconnecting")
 
