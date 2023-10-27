@@ -94,6 +94,13 @@ def main():
             image_copy = original.copy() # camera live feed with surroundings
 
             # Detect and label shapes and display centroids
+            # Wanneer die niks ziet move voor oppakken uit zeten
+            if len(contours) == 0:
+                print('Geen object')
+                Move = False
+            else:
+                Move = True
+
             for contour in contours:
                 epsilon = 0.04 * cv2.arcLength(contour, True)
                 approx = cv2.approxPolyDP(contour, epsilon, True)
@@ -120,11 +127,6 @@ def main():
                 else:
                     shape_label = "Circle"
                 
-                # Wanneer die niks ziet move voor oppakken uit zeten
-                if num_vertices == 0:
-                    Move = False
-                else:
-                    Move = True
 
                 # Adjust the position of the text
                 text_x = cX - 30
